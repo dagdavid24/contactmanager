@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Axios from 'axios';
 
 const Context = React.createContext();
 
@@ -43,10 +44,19 @@ export class Provider extends Component {
         phone: '888-888-8888'
       }
     ],
+
     dispatch: action => {
       this.setState(state => reducer(state, action));
     }
   };
+
+  componentDidMount() {
+    Axios.get('https://jsonplaceholder.typicode.com/users').then(res =>
+      this.setState({
+        contacts: res.data
+      })
+    );
+  }
 
   render() {
     return (
