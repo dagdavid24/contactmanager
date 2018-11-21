@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Axios from 'axios';
+import axios from 'axios';
 
 const Context = React.createContext();
 
@@ -16,6 +16,15 @@ const reducer = (state, action) => {
       return {
         ...state,
         contacts: [action.payload, ...state.contacts]
+      };
+    case 'UPDATE_CONTACT':
+      return {
+        ...state,
+        contacts: state.contacts.map(contact =>
+          contact.id === action.payload.id
+            ? (contact = action.payload)
+            : contact
+        )
       };
     default:
       return state;
@@ -50,12 +59,18 @@ export class Provider extends Component {
     }
   };
 
-  componentDidMount() {
-    Axios.get('https://jsonplaceholder.typicode.com/users').then(res =>
-      this.setState({
-        contacts: res.data
-      })
-    );
+  async componentDidMount() {
+    const res = await axios.get('https://jsonplaceholder.typicode.com/users');
+    this.setState({
+      contacts: res.data
+    });
+    //this way is a more asynchronous method of doing requests where we would have just done
+    // axios.get('https://jsonplaceholder.typicode.com/users')
+    // .then (
+    //   this.setState({
+    //     contacts: res.data
+    //   })
+    // );
   }
 
   render() {

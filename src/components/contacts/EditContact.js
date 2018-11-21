@@ -4,13 +4,29 @@ import TextInputGroup from '../layout/TextInputGroup';
 // import uuid from 'uuid';
 import axios from 'axios';
 
-class AddContact extends Component {
+class EditContact extends Component {
   state = {
     name: '',
     email: '',
     phone: '',
     errors: {}
   };
+
+  async componentDidMount() {
+    //getting the id from the url and putting the information from that id into the form
+    const { id } = this.props.match.params;
+    const res = await axios.get(
+      `https://jsonplaceholder.typicode.com/users/${id}`
+    );
+
+    const contact = res.data;
+
+    this.setState({
+      name: contact.name,
+      email: contact.email,
+      phone: contact.phone
+    });
+  }
 
   handleChange = event => {
     const name = event.target.name;
@@ -43,18 +59,20 @@ class AddContact extends Component {
       return;
     }
 
-    const newContact = {
-      // id: uuid(),
+    const updateContact = {
       name,
       email,
       phone
     };
 
-    const res = await axios.post(
-      'https://jsonplaceholder.typicode.com/users',
-      newContact
+    const { id } = this.props.match.params;
+
+    const res = await axios.put(
+      `https://jsonplaceholder.typicode.com/users/${id}`,
+      updateContact
     );
-    dispatch({ type: 'ADD_CONTACT', payload: res.data });
+
+    dispatch({ type: 'UPDATE_CONTACT', payload: res.data });
 
     //clear state after submission
     this.setState({
@@ -76,7 +94,7 @@ class AddContact extends Component {
           const { dispatch } = value;
           return (
             <div className="card mb-3">
-              <div className="card-header">ADD CONTACT</div>
+              <div className="card-header">EDIT CONTACT</div>
               <div className="card-body">
                 <form
                   action=""
@@ -122,4 +140,4 @@ class AddContact extends Component {
   }
 }
 
-export default AddContact;
+export default EditContact;
